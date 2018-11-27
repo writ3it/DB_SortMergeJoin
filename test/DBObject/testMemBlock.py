@@ -22,7 +22,7 @@ class MemBlockTestCase(unittest.TestCase):
                 if i % valueSize == 0:
                     value = value + 1
 
-    def test_reading_data(self):
+    def test_seek(self):
         size=100
         bSize=100
         valueSize=10
