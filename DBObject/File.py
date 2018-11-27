@@ -18,3 +18,9 @@ class File:
         block = MemBlock(firstIndex = self._index, valueSize = self._valueSize, size = self._blockSize)
         self._index = self._index + self._blockSize
         return block
+
+    def seek(self, offset):
+        '''
+        It doesn't guarantee alignment to block size but, why should be? :)
+        '''
+        self._index = offset
