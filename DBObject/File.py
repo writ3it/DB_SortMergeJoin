@@ -15,7 +15,11 @@ class File:
         return self._size
 
     def read(self):
-        block = MemBlock(firstIndex = self._index, valueSize = self._valueSize, size = self._blockSize)
+        diff = self._size - self._index
+        bs = self._blockSize
+        if (diff<bs):
+            bs = diff
+        block = MemBlock(firstIndex = self._index, valueSize = self._valueSize, size = bs)
         self._index = self._index + self._blockSize
         return block
 
@@ -24,3 +28,6 @@ class File:
         It doesn't guarantee alignment to block size but, why should be? :)
         '''
         self._index = offset
+
+    def index(self):
+        return self._index
