@@ -35,7 +35,7 @@ class RowAccess:
         )
 
     def restorePosition(self):
-        self.file.seek(self._state[0]);
+        self.file.seek(self._state[0])
         self.block = self.file.read()
         self.block.seek(self._state[1])
 

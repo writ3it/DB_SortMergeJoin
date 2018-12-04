@@ -21,15 +21,14 @@ class BufferedFile(File):
 
     def read(self):
         _id = id(self)
-        index = self._index
-        if not self.buffer.ContainBlockFor(_id,index):
+        idx = self.index()
+        if not self.buffer.ContainBlockFor(_id,idx):
             self.__inc_counter(self.COUNTER_DISK_READS)
             data = super(BufferedFile, self).read()
             self.buffer.StoreBlock(_id,data)
         else:
             self.__inc_counter(self.COUNTER_BUFFER_READS)
-        return self.buffer.ReadBlock(_id,index)
-
+        return self.buffer.ReadBlock(_id,idx)
 
     def __inc_counter(self,name, step=1):
         val = self.counter[name]

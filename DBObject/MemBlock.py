@@ -24,4 +24,4 @@ class MemBlock:
     def readRow(self):
         value = math.floor( (self._firstIndex+self._line) / self._valueSize )
         self._line = self._line + 1
-        return [value]
+        return [value,self._firstIndex+self._line]

@@ -53,7 +53,8 @@ class Buffer:
         return [row for row in self.index if (row['fileName'] == fileName and row['pos'] == index)]
 
     def ContainBlockFor(self,fileName:str, index:int)->bool:
-        return len(self.FindIndexToRead(fileName,index))>0
+        res =  len(self.FindIndexToRead(fileName,index))>0
+        return res
 
     def ReadBlock(self, fileName:str, index:int)->MemBlock:
         el = self.FindIndexToRead(fileName, index)

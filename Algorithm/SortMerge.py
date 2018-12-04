@@ -25,27 +25,30 @@ class SortMerge:
         y = -np.inf
         R = RowAccess(self.R)
         S = RowAccess(self.S)
+        print ("id(R) = "+str(id(self.R)))
+        print("id(S) = " + str(id(self.S)))
         r = R.readRow()
         s = S.readRow()
         while True: #Step 3. Merge
             # Step. 3.a. find min y that exists in R & S
 
             y = self.findMinimumValue(R,r,S,s,y)
+
             if (y is False):
                 break
-            if (R.eof() or S.eof()):
-                break
+
             R.savePosition()
             S.savePosition()
-
             while R.current(0) == y:
-                S.restorePosition()
                 while S.current(0) == y:
                     row = R.current()+S.current()
                     # Saving output to buffer is omitted
-                    # print(row)
                     s = S.readRow()
                 r = R.readRow()
+                if (r[0]==y):
+                    S.restorePosition()
+
+
 
 
 
