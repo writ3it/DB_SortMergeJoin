@@ -12,6 +12,9 @@ class MemBlock:
     def eob(self):
         return self._line >= self._size
 
+    def GetPosition(self):
+        return self._firstIndex
+
     def readRow(self):
         value = math.floor( (self._firstIndex+self._line) / self._valueSize )
         self._line = self._line + 1
