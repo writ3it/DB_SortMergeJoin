@@ -3,7 +3,7 @@ from DBObject.BufferedFile import BufferedFile
 from DBObject.Buffer import Buffer
 from DBObject.MemBlock import MemBlock
 
-class FileTestCase(unittest.TestCase):
+class BufferedFileTestCase(unittest.TestCase):
 
     def test_reading(self):
         size = 1000

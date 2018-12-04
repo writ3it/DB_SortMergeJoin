@@ -15,6 +15,12 @@ class MemBlock:
     def GetPosition(self):
         return self._firstIndex
 
+    def GetOffset(self):
+        return self._line
+
+    def seek(self, offset:int):
+        self._line = offset
+
     def readRow(self):
         value = math.floor( (self._firstIndex+self._line) / self._valueSize )
         self._line = self._line + 1
