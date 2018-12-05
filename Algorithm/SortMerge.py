@@ -25,8 +25,6 @@ class SortMerge:
         y = -np.inf
         R = RowAccess(self.R)
         S = RowAccess(self.S)
-        print ("id(R) = "+str(id(self.R)))
-        print("id(S) = " + str(id(self.S)))
         r = R.readRow()
         s = S.readRow()
         while True: #Step 3. Merge
@@ -36,7 +34,7 @@ class SortMerge:
 
             if (y is False):
                 break
-            print("y= " + str(y))
+
             R.savePosition()
             S.savePosition()
             while R.current(0) == y:
