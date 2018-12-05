@@ -36,7 +36,7 @@ class SortMerge:
 
             if (y is False):
                 break
-
+            print("y= " + str(y))
             R.savePosition()
             S.savePosition()
             while R.current(0) == y:
@@ -56,7 +56,7 @@ class SortMerge:
 
     def findMinimumValue(self,R:RowAccess,r,S:RowAccess,s,y):
 
-        if (R.eof() or S.eof()) and s[0] != r[0]:
+        if (R.eof() or S.eof()):
             return False
 
         if (r[0] == s[0]):

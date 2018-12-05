@@ -9,7 +9,7 @@ class RowAccess:
         self._lastRow = False
 
     def eof(self):
-        return self.file.eof()
+        return self.file.eof() and self.block.eob()
 
     def current(self,col=False):
         if col is False:
@@ -17,12 +17,10 @@ class RowAccess:
         return self._lastRow[col]
 
     def readRow(self):
-        if self.block is False:
+        if self.block is False or  self.block.eob():
             self.block = self.file.read()
         row = self.block.readRow()
         self._lastRow = row
-        if self.block.eob():
-            self.block = False
         return row
 
 
