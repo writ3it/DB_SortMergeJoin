@@ -17,6 +17,7 @@ class Buffer:
         self.bufferSize = noBlocks
         self.currentSize = 0
         self.index = []
+        self.counter = {}
         self.blockSize = blockSize
         pass
 
@@ -33,7 +34,7 @@ class Buffer:
     def StoreBlock(self,fileName:str, memBlock:MemBlock):
         self.removeOlds()
         self.addNew( fileName, memBlock)
-        pass
+
 
     def removeOlds(self):
         while self.IsFull():
@@ -42,12 +43,31 @@ class Buffer:
     def _removeOld(self):
         removed = self.blocks.popleft()
         self.currentSize = self.currentSize - 1
-        self.index = [{'fileName':row['fileName'],'pos':row['pos'],'index':(row['index']-1) } for row in self.index if row['index'] >= 0]
+        self.index = [{'fileName':row['fileName'],'pos':row['pos'],'index':(row['index']-1) } for row in self.index if row['index'] > 0]
+
 
     def addNew(self, fileName:str, memBlock:MemBlock):
         self.blocks.append(memBlock)
-        self.index.append({'fileName': fileName, 'pos': memBlock.GetPosition(), 'index': self.currentSize})
+        idxItem = {'fileName': fileName, 'pos': memBlock.GetPosition(), 'index': self.currentSize}
+        self.index.append(idxItem)
         self.currentSize = self.currentSize + 1
+        self._inc_counter(idxItem,1,0)
+
+    def _inc_counter(self,item,add,remove):
+        if item['fileName'] not in self.counter:
+            self.counter[item['fileName']] = {}
+
+        if item['pos'] not in self.counter[item['fileName']]:
+            self.counter[item['fileName']][item['pos']] = {'add':0,'remove':0}
+
+        current = self.counter[item['fileName']][item['pos']]
+        self.counter[item['fileName']][item['pos']] = {
+            'add': current['add']+add,
+            'remove': current['remove']+remove
+        }
+
+    def PrintCounter(self):
+        print(self.counter)
 
     def FindIndexToRead(self,fileName:str, index:int):
         return [row for row in self.index if (row['fileName'] == fileName and row['pos'] == index)]

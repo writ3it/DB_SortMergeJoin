@@ -12,6 +12,9 @@ class MemBlock:
     def eob(self):
         return self._line >= self._size
 
+    def size(self):
+        return self._size
+
     def GetPosition(self):
         return self._firstIndex
 
@@ -24,4 +27,7 @@ class MemBlock:
     def readRow(self):
         value = math.floor( (self._firstIndex+self._line) / self._valueSize )
         self._line = self._line + 1
-        return [value,self._firstIndex+self._line]
+        ''' FROMAT
+        R[A], row_id_r, block_begin_index_r, S[A], row_id_s, block_begin_index_s
+        '''
+        return [value,self._firstIndex+self._line,self.GetPosition()]

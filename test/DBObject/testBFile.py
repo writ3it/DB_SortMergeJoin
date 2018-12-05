@@ -17,6 +17,7 @@ class BufferedFileTestCase(unittest.TestCase):
             self.assertIsInstance(block, MemBlock)
             self.assertEqual(i*bSize, block.GetPosition(),msg="Niewłaściwa lokalizacja bloków")
             i = i + 1
+        self.assertEqual(expected, file.GetCounterVal(BufferedFile.COUNTER_DISK_READS))
         self.assertEqual(expected, i, msg="Odczytano niewłasciwą liczbę bloków")
 
 if __name__ == '__main__':

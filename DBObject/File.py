@@ -20,8 +20,11 @@ class File:
         if (diff<bs):
             bs = diff
         block = MemBlock(firstIndex = self._index, valueSize = self._valueSize, size = bs)
-        self._index = self._index + self._blockSize
+        self._inc_index(self._index)
         return block
+
+    def _inc_index(self, base):
+        self._index = base + self._blockSize
 
     def seek(self, offset):
         '''

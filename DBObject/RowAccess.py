@@ -25,15 +25,25 @@ class RowAccess:
 
 
     def savePosition(self):
-        if self.block is False:
+        if self.block is False or  self.block.eob():
             self.block = self.file.read()
         self._state = (
             self.block.GetPosition(),
-            self.block.GetOffset()
+            self.block.GetOffset()-1  # DANGER, effect of main loop (prefetching row in recursion)
         )
 
     def restorePosition(self):
         self.file.seek(self._state[0])
         self.block = self.file.read()
         self.block.seek(self._state[1])
+
+    def debugBlock(self):
+        if (self.block == False):
+            print("Block is False")
+            return
+        print("---")
+        print(self.file.index())
+        print(self.block.GetPosition())
+        print(self.block.GetOffset())
+        print("---")
 

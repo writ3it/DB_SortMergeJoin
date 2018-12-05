@@ -27,6 +27,7 @@ class SortMerge:
         S = RowAccess(self.S)
         r = R.readRow()
         s = S.readRow()
+        no = 1;
         while True: #Step 3. Merge
             # Step. 3.a. find min y that exists in R & S
 
@@ -37,14 +38,28 @@ class SortMerge:
 
             R.savePosition()
             S.savePosition()
+
             while R.current(0) == y:
                 while S.current(0) == y:
                     row = R.current()+S.current()
                     # Saving output to buffer is omitted
+                    ''' FROMAT
+                    R[A], row_id_r, block_begin_index_r, S[A], row_id_s, block_begin_index_s
+                    '''
+
+                    #print(row)
+                    if S.eof():
+                        break
                     s = S.readRow()
+
+                if R.eof():
+                    R.debugBlock()
+                    return
+
                 r = R.readRow()
-                if (r[0]==y):
+                if r[0] == y:
                     S.restorePosition()
+                    s = S.readRow()
 
 
 
@@ -53,11 +68,10 @@ class SortMerge:
 
 
     def findMinimumValue(self,R:RowAccess,r,S:RowAccess,s,y):
-
-        if (R.eof() or S.eof()):
+        if R.eof():
             return False
 
-        if (r[0] == s[0]):
+        if r[0] == s[0]:
             return r[0]
 
         elif (r[0]>s[0]):
