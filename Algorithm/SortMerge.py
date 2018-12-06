@@ -53,7 +53,6 @@ class SortMerge:
                     s = S.readRow()
 
                 if R.eof():
-                    R.debugBlock()
                     return
 
                 r = R.readRow()
