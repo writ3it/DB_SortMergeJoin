@@ -15,8 +15,11 @@ def experiment(M:int, L:int,pr:float, ps:float, n:int = 100):
     buffer = Buffer(noBlocks=M, blockSize=bs)
     RValSize = int(pr*M*L)
     SValSize = int(ps*M*L)
-    RSize = int(RValSize * n)
-    SSize = int(SValSize * n)
+
+    N = n*n*n*n
+    vn = np.sqrt(N/(RValSize*SValSize))
+    RSize = int(RValSize * vn)
+    SSize = int(SValSize * vn)
     print("R: number of blocks = " + str(RSize / bs) + " val size (rows) = " + str(RValSize))
     print("S: number of blocks = " + str(SSize / bs) + " val size (rows) = " + str(SValSize))
     R = BufferedFile(buffer, size=RSize, valueSize=RValSize)
