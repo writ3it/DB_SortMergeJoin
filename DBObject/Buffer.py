@@ -43,7 +43,9 @@ class Buffer:
     def _removeOld(self):
         removed = self.blocks.popleft()
         self.currentSize = self.currentSize - 1
+        idxItem = [{'fileName':row['fileName'],'pos':row['pos'],'index':(row['index']-1) } for row in self.index if row['index'] == 0][0]
         self.index = [{'fileName':row['fileName'],'pos':row['pos'],'index':(row['index']-1) } for row in self.index if row['index'] > 0]
+        self._inc_counter(idxItem, 0, 1)
 
 
     def addNew(self, fileName:str, memBlock:MemBlock):
@@ -65,6 +67,12 @@ class Buffer:
             'add': current['add']+add,
             'remove': current['remove']+remove
         }
+
+    def GetIndexesIn(self):
+        return [row['pos'] for row in self.index]
+
+    def ReadCounter(self,filename:str, pos:int, type:str):
+        return self.counter[filename][pos][type];
 
     def PrintCounter(self):
         print(self.counter)
