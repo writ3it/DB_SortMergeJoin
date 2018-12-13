@@ -31,7 +31,7 @@ class RowAccess:
 
 
     def savePosition(self):
-        if self.block is False or  self.block.eob():
+        if self.block is False:
             self.block = self.file.read()
         self._state = (
             self.block.GetPosition(),
@@ -42,6 +42,8 @@ class RowAccess:
         self.file.seek(self._state[0])
         self.block = self.file.read()
         self.block.seek(self._state[1])
+        self._lastRow = self.block.readRow()
+
 
     def debugBlock(self):
         if (self.block == False):

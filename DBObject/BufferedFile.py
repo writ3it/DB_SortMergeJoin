@@ -9,6 +9,8 @@ Responsibility:
 class BufferedFile(File):
 
     def __init__(self, buffer:Buffer, size:int, valueSize:int ):
+        if size<0:
+            raise Exception("Invalid size")
         super(BufferedFile, self).__init__(buffer.GetBlockSize(), size,valueSize)
         self.buffer = buffer
         self.counter = {

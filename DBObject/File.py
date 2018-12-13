@@ -3,6 +3,10 @@ from .MemBlock import MemBlock
 class File:
 
     def __init__(self, blockSize, size, valueSize):
+        if valueSize<0:
+            raise Exception("invalid valueSize")
+        if size<0:
+            raise Exception("invalid valueSize")
         self._blockSize = blockSize
         self._size = size
         self._valueSize = valueSize
@@ -16,6 +20,8 @@ class File:
 
     def read(self):
         diff = self._size - self._index
+        if diff == 0:
+            raise Exception("EOF")
         bs = self._blockSize
         if (diff<bs):
             bs = diff
