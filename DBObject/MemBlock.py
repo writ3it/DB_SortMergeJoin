@@ -25,9 +25,11 @@ class MemBlock:
         self._line = offset
 
     def readRow(self):
+        if self._line >= self._size:
+            raise Exception("index out of range")
         value = math.floor( (self._firstIndex+self._line) / self._valueSize )
         self._line = self._line + 1
-        ''' FROMAT
+        '''
         R[A], row_id_r, block_begin_index_r, S[A], row_id_s, block_begin_index_s
         '''
-        return [value,self._firstIndex+self._line,self.GetPosition()]
+        return {"A":value,"RowId": self._firstIndex+self._line,"BlockHead": self.GetPosition()}

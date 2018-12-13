@@ -17,7 +17,7 @@ class MemBlockTestCase(unittest.TestCase):
                 line = block.readRow()
                 # \/ uncomment this if you want to see results!
                 # print(line,value)
-                self.assertEqual(value, line[0])
+                self.assertEqual(value, line['A'])
                 i = i + 1
                 if i % valueSize == 0:
                     value = value + 1

@@ -68,6 +68,14 @@ class Buffer:
             'remove': current['remove']+remove
         }
 
+    def Debug(self):
+        counts = {}
+        for i in self.index:
+            if not i['fileName'] in counts:
+                counts[i['fileName']] = 0
+            counts[i['fileName']] = counts[i['fileName']] + 1
+        print(str(len(self.index))+" "+ " "+str(counts))
+
     def GetIndexesIn(self):
         return [row['pos'] for row in self.index]
 

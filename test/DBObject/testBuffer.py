@@ -41,8 +41,8 @@ class BufferTestCase(unittest.TestCase):
         for i in range(20):
             buffer.StoreBlock('test',memBlock)
 
-        self.assertEqual(20, buffer.ReadCounter('test', 0,'add'))
-        self.assertEqual(10, buffer.ReadCounter('test', 0, 'remove'))
+        self.assertEqual(20, buffer.ReadCounter('test', 0,  'add'   ))
+        self.assertEqual(10, buffer.ReadCounter('test', 0, 'remove' ))
 
 
 
