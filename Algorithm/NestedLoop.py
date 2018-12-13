@@ -1,15 +1,12 @@
 from DBObject.BufferedFile import BufferedFile
-from typing import Callable
 from DBObject.RowAccess import RowAccess
 import numpy as np
-
-from DBObject.Buffer import Buffer
 
 def log(str):
    # print(str)
     pass
 
-class SortMerge:
+class NestedLoop:
 
     '''
     leftRelation - BufferedFile
@@ -37,38 +34,15 @@ class SortMerge:
         # order is important for easies way to calculate expected values in tests
         R.readRow()
         S.readRow()
-        finished = False
-        while True:
-            y = self.findMinimumValue(R,S,y)
-            log("y = "+str(y))
-            if (y is False):
-                break
-            S.savePosition()
-            while R.current(col) == y:
-                log("Rloop")
-                while S.current(col) == y:
-                    row = {"R":R.current(), "S": S.current()}
-                    log(row)
-                    if S.eof():
-                        log("S break")
-                        break
-                    log("S read")
-                    S.readRow()
-                if R.eof():
-                    log("R break")
-                    break
-                log("R read")
-                if R.eof():
-                    log("R break")
-                    finished = True
-                    break
-                R.readRow()
-                if R.current(col) == y:
-                    log("S rewind")
-                    S.restorePosition()
-        if finished:
-            return True
 
+        while not R.eof():
+            R.readRow()
+            S.savePosition()
+            while not S.eof():
+                S.readRow()
+                if R.current(col) == S.current(col):
+                    row = {"R": R.current(), "S": S.current()}
+            S.restorePosition()
 
     def findMinimumValue(self,R:RowAccess,S:RowAccess,y,col="A"):
         r = R.current(col)
@@ -100,4 +74,4 @@ class SortMerge:
 
 
     def GetExecutionEstimation(self):
-        return self.R.GetCounterVal(BufferedFile.COUNTER_DISK_READS) + self.S.GetCounterVal(BufferedFile.COUNTER_DISK_READS) 
+        return self.R.GetCounterVal(BufferedFile.COUNTER_DISK_READS) + self.S.GetCounterVal(BufferedFile.COUNTER_DISK_READS)
