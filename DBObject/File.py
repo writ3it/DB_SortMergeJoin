@@ -20,7 +20,7 @@ class File:
 
     def read(self):
         diff = self._size - self._index
-        if diff == 0:
+        if diff <= 0:
             raise Exception("EOF")
         bs = self._blockSize
         if (diff<bs):

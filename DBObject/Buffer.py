@@ -13,13 +13,19 @@ class Buffer:
     noBlocks - number of Blocks to manage in Buffer
     '''
     def __init__(self, noBlocks:int, blockSize:int):
-        self.blocks = deque([])
         self.bufferSize = noBlocks
         self.currentSize = 0
         self.index = []
         self.counter = {}
         self.blockSize = blockSize
+        self.time = 0
         pass
+
+    def _tick(self):
+        self.time = self.time + 1
+
+    def Time(self):
+        return self.time
 
     def GetSize(self):
         return self.currentSize
@@ -41,19 +47,23 @@ class Buffer:
             self._removeOld()
 
     def _removeOld(self):
-        removed = self.blocks.popleft()
+
         self.currentSize = self.currentSize - 1
-        idxItem = [{'fileName':row['fileName'],'pos':row['pos'],'index':(row['index']-1) } for row in self.index if row['index'] == 0][0]
-        self.index = [{'fileName':row['fileName'],'pos':row['pos'],'index':(row['index']-1) } for row in self.index if row['index'] > 0]
-        self._inc_counter(idxItem, 0, 1)
+        times = [row['time'] for row in self.index]
+        minTime = min(times)
+        idxItems = [{'fileName':row['fileName'],'pos':row['pos'],'index':(row['index']-1) ,'time':row['time'],'data':row['data']} for row in self.index if row['time'] == minTime]
+        self.index = [{'fileName':row['fileName'],'pos':row['pos'],'index':(row['index']-1),'time':row['time'],'data':row['data'] } for row in self.index if row['time'] > minTime]
+        for idxItem in idxItems:
+            self._inc_counter(idxItem, 0, 1)
+        self._tick()
 
 
     def addNew(self, fileName:str, memBlock:MemBlock):
-        self.blocks.append(memBlock)
-        idxItem = {'fileName': fileName, 'pos': memBlock.GetPosition(), 'index': self.currentSize}
+        idxItem = {'fileName': fileName, 'pos': memBlock.GetPosition(), 'index': self.currentSize, 'time':self.Time(),'data':memBlock}
         self.index.append(idxItem)
         self.currentSize = self.currentSize + 1
         self._inc_counter(idxItem,1,0)
+        self._tick()
 
     def _inc_counter(self,item,add,remove):
         if item['fileName'] not in self.counter:
@@ -95,5 +105,9 @@ class Buffer:
     def ReadBlock(self, fileName:str, index:int)->MemBlock:
         el = self.FindIndexToRead(fileName, index)
         index = el.pop()
-        block = self.blocks[index['index']] # too many indexes :D
-        return block
+        for i,f in enumerate(self.index):
+            if f['index'] is index['index']:
+                self.index[i]['time'] = self.Time()
+
+        self._tick()
+        return index['data']

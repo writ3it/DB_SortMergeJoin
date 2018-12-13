@@ -7,7 +7,7 @@ class MemBlock:
         self._firstIndex = firstIndex
         self._valueSize = valueSize
         if size<1:
-            raise Exception("Invalid size value")
+            raise Exception("Invalid size value size() = " + str(size))
         self._size = size
         self._line = 0
 

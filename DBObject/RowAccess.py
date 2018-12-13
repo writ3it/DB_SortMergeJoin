@@ -31,7 +31,7 @@ class RowAccess:
 
 
     def savePosition(self):
-        if self.block is False:
+        if self.block is False :
             self.block = self.file.read()
         self._state = (
             self.block.GetPosition(),

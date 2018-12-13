@@ -6,7 +6,7 @@ import numpy as np
 from DBObject.Buffer import Buffer
 
 def log(str):
-   # print(str)
+    #print(str)
     pass
 
 class SortMerge:
@@ -100,4 +100,4 @@ class SortMerge:
 
 
     def GetExecutionEstimation(self):
-        return self.R.GetCounterVal(BufferedFile.COUNTER_DISK_READS) + self.S.GetCounterVal(BufferedFile.COUNTER_DISK_READS) 
+        return self.R.GetCounterVal(BufferedFile.COUNTER_DISK_READS) + self.S.GetCounterVal(BufferedFile.COUNTER_DISK_READS)
