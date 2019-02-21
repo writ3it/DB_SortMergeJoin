@@ -1,6 +1,12 @@
 import unittest
 
-class NestedLoopTestCase(unittest.TestCase):
+from DBObject.Buffer import Buffer
+from DBObject.DataFile import DataFile
+from DBObject.Table import Table
+from Algorithm.NestedLoop import NestedLoop
+from Operator import Join
+
+class NestedLoopTest(unittest.TestCase):
 
 
     def test_disk_accesses(self):
@@ -21,7 +27,7 @@ class NestedLoopTestCase(unittest.TestCase):
         algorithm.join(R,S,Join.EQUAL)
 
         actual = buffer.GetDiskHitsCounter()
-        self.assertEqual(expectedL, actual, "Join R->S")
+        self.assertEqual(expected_L, actual, "Join R->S")
 
         buffer.ResetCoutners()
         algorithm = NestedLoop()
