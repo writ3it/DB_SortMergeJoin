@@ -5,6 +5,8 @@ from DBObject.DataFile import DataFile
 from DBObject.Table import Table
 from Algorithm.NestedLoop import NestedLoop
 from Operator import Join
+from Benchmark.Counter import Counter
+from Benchmark.MeasurerProxy import MeasurerProxy
 
 class NestedLoopTest(unittest.TestCase):
 
@@ -16,9 +18,14 @@ class NestedLoopTest(unittest.TestCase):
         expected_L = 5500
         expected_R = 6000
 
+        counter = Counter()
+        counter.Observe("NextBlock")
+
         buffer = Buffer(M)
-        fR = DataFile(B_R,1)
-        fS = DataFile(B_S,1)
+        fR = DataFile(B_R,key_size=1, block_size=5)
+        fS = DataFile(B_S,key_size=1, block_size=5)
+        fR = MeasurerProxy(fR,counter)
+        fS = MeasurerProxy(fS, counter)
 
         R = Table(fR, buffer.GetMemorySpace(1))
         S = Table(fS, buffer.GetMemorySpace(100))
@@ -26,14 +33,7 @@ class NestedLoopTest(unittest.TestCase):
         algorithm = NestedLoop()
         algorithm.join(R,S,Join.EQUAL)
 
-        actual = buffer.GetDiskHitsCounter()
-        self.assertEqual(expected_L, actual, "Join R->S")
+        self.assertEqual(expected_L, counter.GetValue(), "Join R->S")
 
-        buffer.ResetCoutners()
-        algorithm = NestedLoop()
-        algorithm.join(S, R, Join.EQUAL)
-
-        actual = buffer.GetDiskHitsCounter()
-        self.assertEqual(expected_R, actual, "Join S->R")
 
 
