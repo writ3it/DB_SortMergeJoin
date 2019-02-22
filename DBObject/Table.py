@@ -20,5 +20,8 @@ class Table:
         while not self.Eof():
             yield self.NextRow()
 
+    def GetSize(self):
+        return self.file.GetSize()
+
     def Reset(self):
         self.buffer.Reset()

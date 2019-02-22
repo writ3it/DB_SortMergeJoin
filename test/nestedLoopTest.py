@@ -12,28 +12,30 @@ class NestedLoopTest(unittest.TestCase):
 
 
     def test_disk_accesses(self):
-        B_R = 1000
-        B_S = 500
+        B_R = 500
+        B_S = 1000
         M = 101
-        expected_L = 5500
-        expected_R = 6000
+        expected = 2500500 # rows(R) * blocks(S) + blocks(R)
 
         counter = Counter()
         counter.Observe("NextBlock")
 
         buffer = Buffer(M)
-        fR = DataFile(B_R,key_size=1, block_size=5)
-        fS = DataFile(B_S,key_size=1, block_size=5)
-        fR = MeasurerProxy(fR,counter)
-        fS = MeasurerProxy(fS, counter)
+        fR = DataFile(B_R,key_size=1, block_size=5, name="fR")
+        fS = DataFile(B_S,key_size=1, block_size=5, name="fS")
+        fR = MeasurerProxy(fR, counter, name="fR")
+        fS = MeasurerProxy(fS, counter, name="fS")
 
         R = Table(fR, buffer.GetMemorySpace(1))
         S = Table(fS, buffer.GetMemorySpace(100))
 
-        algorithm = NestedLoop()
-        algorithm.join(R,S,Join.EQUAL)
+        self.assertEqual(B_R, R.GetSize(), "Size of R")
+        self.assertEqual(B_S, S.GetSize(), "Size of S")
 
-        self.assertEqual(expected_L, counter.GetValue(), "Join R->S")
+        algorithm = NestedLoop()
+        algorithm.join(R, S, Join.EQUAL)
+
+        self.assertEqual(expected, counter.GetValue(), "Join R->S")
 
 
 
