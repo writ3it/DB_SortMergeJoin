@@ -10,18 +10,33 @@ class MemorySpace:
         self.idx = -1
         self.bufferedBlocks = []
         self.lastBlockCursor = -1
+        self.partSize = 0
+        #cannot rewrite file.NextBlock because it's observed by proxy!
+        #when you assign to field it will not be observed
         self.__light_contains = False
         self._fileContains = None
         self._fileEof = None
         self._fileReset = None
-        self._fileNextBlock = None
+        self._readedBlocks = 0
+
+    def GetSize(self):
+        return self.size
+
+    def GetPart(self):
+        n = self.size
+        if self._readedBlocks+n > self.file.GetSize():
+            n = self.file.GetSize() - self._readedBlocks
+        self._readedBlocks += n
+        self.idx += self.partSize
+        file = self.file
+        return map(lambda i: file.NextBlock(), range(0, n))
 
     def SetDataFile(self, file: DataFile):
         self.file = file
         self._fileContains = self.file.Contains
         self._fileEof = self.file.Eof
         self._fileReset = self.file.Reset
-        self._fileNextBlock = self.file.NextBlock
+        self.partSize = self.size * self.file.GetSize()
 
     def NextRow(self):
         if self.Eof():
@@ -43,7 +58,8 @@ class MemorySpace:
             self.__light_contains = self.bufferedBlocks[self.lastBlockCursor].Contains(self.idx)
 
     def _loadNextBlock(self)->None:
-        block = self._fileNextBlock()
+        block = self.file.NextBlock()
+        self._readedBlocks += 1
         self.lastBlockCursor = (self.lastBlockCursor + 1) % self.size
         if len(self.bufferedBlocks)<self.size:
             self.bufferedBlocks.append(block)
@@ -61,5 +77,6 @@ class MemorySpace:
 
     def Reset(self):
         self.idx = -1
+        self._readedBlocks
         self._fileReset()
 

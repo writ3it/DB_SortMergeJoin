@@ -1,8 +1,6 @@
-
 from Operator import Join
 from DBObject.Table import Table
 from typing import Callable, List
-
 
 class NestedLoop(Join.JoinMeta):
 
@@ -15,5 +13,4 @@ class NestedLoop(Join.JoinMeta):
         for row_l in leftRows():
             for row_r in rightRows():
                 if condition(row_l, row_r):
-                    print(row_l, row_r)
                     mergeFunction(row_l, row_r)

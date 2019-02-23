@@ -12,6 +12,10 @@ class DataBlock:
     def GetEndIdx(self)->int:
         return self.start_idx + self.no_rows - 1
 
+    def GetRows(self):
+        readRow = self.ReadRow
+        return map(lambda i: readRow(i), range(self.GetStartIdx(),self.GetEndIdx()+1))
+
     def ReadRow(self, idx: int):
         keyValue = self.calcKeyAttributevalue(idx)
         return [keyValue]
