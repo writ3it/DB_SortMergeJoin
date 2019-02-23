@@ -56,12 +56,17 @@ class NestedLoopTest(unittest.TestCase):
         for blocks in R.GetBufferedBlocks():
             no_b += 1
             j = 0
+
             for lrow in S.GetRows():
                 repeated_rows += 1
+                first = True
                 for block in blocks:
                     for row in block.GetRows():
+                        if first:
+                            i = row[0]
+                            first = False
                         self.assertEqual(i, row[0], msg="Step Error Inner")
-                        self.assertEqual(j, lrow[j], msg="Step Error Inner J")
+                        self.assertEqual(j, lrow[0], msg="Step Error Inner J")
                         i += key_size
                 self.assertEqual(j, lrow[0], msg="Step Error Outter")
                 j+=key_size
