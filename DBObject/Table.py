@@ -8,20 +8,16 @@ class Table:
         self.file = file
         self.buffer = buffer_space
         self.buffer.SetDataFile(file)
-
-    def Eof(self):
-        return self.buffer.Eof()
-
-    def NextRow(self):
-        return self.buffer.NextRow()
+        #improve performance
+        self.Reset = self.buffer.Reset
+        self.GetSize = self.file.GetSize
+        self.blockSize = self.file.BlockSize
+        self.NextRow = self.buffer.NextRow
+        self.Eof = self.buffer.Eof
 
     def GetRows(self):
         self.Reset()
-        while not self.Eof():
-            yield self.NextRow()
-
-    def GetSize(self):
-        return self.file.GetSize()
-
-    def Reset(self):
-        self.buffer.Reset()
+        nextRow = self.NextRow
+        n = self.GetSize()*self.blockSize()
+        for _ in range(0, n):
+            yield nextRow()

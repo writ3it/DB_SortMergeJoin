@@ -9,7 +9,10 @@ class NestedLoop(Join.JoinMeta):
     # join method
     # Naive Nested Loop
     def join(self, left_relation: Table, right_relation: Table, condition: Callable[[List[int], List[int]], bool]):
-        for row_l in left_relation.GetRows():
-            for row_r in right_relation.GetRows():
+        mergeFunction = self.mergeOutputRow
+        leftRows = left_relation.GetRows
+        rightRows = right_relation.GetRows
+        for row_l in leftRows():
+            for row_r in rightRows():
                 if condition(row_l, row_r):
-                    self.mergeOutputRow(row_l, row_r)
+                    mergeFunction(row_l, row_r)

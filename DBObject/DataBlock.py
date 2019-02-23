@@ -18,3 +18,6 @@ class DataBlock:
 
     def calcKeyAttributevalue(self, row_id: int)->int:
         return row_id // self.key_size
+
+    def Contains(self, idx):
+        return self.GetStartIdx() <= idx <= self.GetEndIdx()

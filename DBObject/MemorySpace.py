@@ -1,4 +1,5 @@
 from DBObject.DataFile import DataFile
+from functools import reduce
 
 
 class MemorySpace:
@@ -9,9 +10,18 @@ class MemorySpace:
         self.idx = -1
         self.bufferedBlocks = []
         self.lastBlockCursor = -1
+        self.__light_contains = False
+        self._fileContains = None
+        self._fileEof = None
+        self._fileReset = None
+        self._fileNextBlock = None
 
     def SetDataFile(self, file: DataFile):
         self.file = file
+        self._fileContains = self.file.Contains
+        self._fileEof = self.file.Eof
+        self._fileReset = self.file.Reset
+        self._fileNextBlock = self.file.NextBlock
 
     def NextRow(self):
         if self.Eof():
@@ -22,16 +32,18 @@ class MemorySpace:
     def Read(self):
         self.loadBlocksIfShouldBe()
         for block in self.bufferedBlocks:
-            if block.GetStartIdx() <= self.idx <= block.GetEndIdx():
+            if block.Contains(self.idx):
                 return block.ReadRow(self.idx)
         raise Exception("Something went wrong idx="+str(self.idx)+" file="+self.file.GetName())
 
     def loadBlocksIfShouldBe(self)->None:
-        while not self.Contains(self.idx) and not self.file.Eof():
+        self.__light_contains = self.Contains(self.idx)
+        while not self.__light_contains and not self._fileEof():
             self._loadNextBlock()
+            self.__light_contains = self.bufferedBlocks[self.lastBlockCursor].Contains(self.idx)
 
     def _loadNextBlock(self)->None:
-        block = self.file.NextBlock()
+        block = self._fileNextBlock()
         self.lastBlockCursor = (self.lastBlockCursor + 1) % self.size
         if len(self.bufferedBlocks)<self.size:
             self.bufferedBlocks.append(block)
@@ -39,15 +51,15 @@ class MemorySpace:
             self.bufferedBlocks[self.lastBlockCursor] = block
 
     def Contains(self, idx: int)->bool:
-        for block in self.bufferedBlocks:
-            if block.GetStartIdx() <= idx <= block.GetEndIdx():
-                return True
-        return False
+        if len(self.bufferedBlocks) == 0:
+            return False
+        states = map(lambda block: block.Contains(idx), self.bufferedBlocks)
+        return reduce(lambda x, y: x or y, states)
 
     def Eof(self):
-        return not self.file.Contains(self.idx+1) and not self.Contains(self.idx+1)
+        return not self._fileContains(self.idx+1) and not self.Contains(self.idx+1)
 
     def Reset(self):
         self.idx = -1
-        self.file.Reset()
+        self._fileReset()
 

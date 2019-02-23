@@ -21,6 +21,9 @@ class DataFile:
     def Contains(self, idx):
         return 0 <= idx <= self.blockSize*self.fileSize -1
 
+    def BlockSize(self):
+        return self.blockSize
+
     def GetSize(self):
         return self.fileSize
 
