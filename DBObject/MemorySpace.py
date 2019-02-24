@@ -20,6 +20,9 @@ class MemorySpace:
         self._fileReset = None
         self._readedBlocks = 0
 
+    def GetLastRowId(self):
+        return self.idx
+
     def RewindTo(self, idx:int)->None:
         if not self.file.Contains(idx):
             raise Exception("Idx doesn't exists")
@@ -31,6 +34,7 @@ class MemorySpace:
         self._readedBlocks = block.GetBlockId()+1
         self.idx = idx
         self.file.Seek(idx)
+        return block.ReadRow(idx)
 
     def GetSize(self)->int:
         return self.size

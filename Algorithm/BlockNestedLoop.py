@@ -9,6 +9,7 @@ class BlockNestedLoop(Join.JoinMeta):
     # join method
     # Block Nested Loop, better than naive
     def join(self, left_relation: Table, right_relation: Table, condition: Callable[[List[int], List[int]], bool]):
+        super().join(left_relation, right_relation, condition)
         mergeFunction = self.mergeOutputRow
         rightBlocks = right_relation.GetBufferedBlocks
         leftRows = left_relation.GetRows

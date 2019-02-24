@@ -11,7 +11,7 @@ class Table:
         self.buffer.SetDataFile(file)
         self.GetPart = self.buffer.GetPart
         #improve performance
-        self.GetLastRowId = self.file.GetLastRowId
+        self.GetLastRowId = self.buffer.GetLastRowId
         self.Reset = self.buffer.Reset
         self.GetSize = self.file.GetSize
         self.blockSize = self.file.BlockSize

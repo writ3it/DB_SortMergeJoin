@@ -3,7 +3,7 @@ import unittest
 from DBObject.Buffer import Buffer
 from DBObject.DataFile import DataFile
 from DBObject.Table import Table
-class NestedLoopTest(unittest.TestCase):
+class TableTest(unittest.TestCase):
 
 
     def test_iterate_over_all(self):

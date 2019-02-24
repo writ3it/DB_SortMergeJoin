@@ -1,5 +1,5 @@
 import unittest
-from test.sortMergeTest import SortMergeTest
+from test.keySizeTest import KeySizeTest
 
 if __name__ == '__main__':
     unittest.main()
