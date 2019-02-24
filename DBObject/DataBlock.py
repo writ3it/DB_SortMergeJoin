@@ -1,3 +1,5 @@
+from DBObject.Row import Row
+
 
 class DataBlock:
 
@@ -19,9 +21,9 @@ class DataBlock:
         readRow = self.ReadRow
         return map(lambda i: readRow(i), range(self.GetStartIdx(),self.GetEndIdx()+1))
 
-    def ReadRow(self, idx: int):
+    def ReadRow(self, idx: int)->Row:
         keyValue = self.calcKeyAttributevalue(idx)
-        return [keyValue]
+        return Row([keyValue], row_id=idx)
 
     def calcKeyAttributevalue(self, row_id: int)->int:
         return row_id // self.key_size

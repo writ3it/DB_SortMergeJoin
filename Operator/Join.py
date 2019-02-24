@@ -8,7 +8,7 @@ class JoinMeta:
         self._outputSize = 0
 
     def mergeOutputRow(self, row_l, row_r):
-        #print(row_l, row_r)
+        #print(row_l.Merge(row_r))
         self._outputSize += 1
         pass
 

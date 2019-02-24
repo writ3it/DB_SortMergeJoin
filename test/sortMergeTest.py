@@ -10,22 +10,20 @@ from Benchmark.MeasurerProxy import MeasurerProxy
 
 class SortMergeTest(unittest.TestCase):
 
-
-
     # Garcia-Molina example
     def test_disk_accesses(self):
         B_R = 1000
         B_S = 500
         M = 101
-        expected = 1001 # rows(R) * blocks(S) + blocks(R)
-        expected2 = 1001
+        expected = 1500 # rows(R) * blocks(S) + blocks(R)
+        expected2 = 1500
 
         counter = Counter()
         counter.Observe("NextBlock")
         counter.Observe("LoadBlockWith")
 
         buffer = Buffer(M)
-        fR = DataFile(B_R,key_size=1, block_size=5, name="fR")
+        fR = DataFile(B_R,key_size=2, block_size=5, name="fR")
         fS = DataFile(B_S,key_size=1, block_size=5, name="fS")
         fR = MeasurerProxy(fR, counter, name="fR")
         fS = MeasurerProxy(fS, counter, name="fS")
@@ -38,7 +36,6 @@ class SortMergeTest(unittest.TestCase):
 
         algorithm = SortMerge()
         algorithm.join(R, S, Join.EQUAL)
-
         self.assertEqual(expected, counter.GetValue(), "Join R->S")
 
         counter.Reset()
@@ -48,5 +45,3 @@ class SortMergeTest(unittest.TestCase):
 
         algorithm.join(S, R, Join.EQUAL)
         self.assertEqual(expected2, counter.GetValue(), "Join S->R")
-
-

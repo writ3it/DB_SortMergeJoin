@@ -8,12 +8,12 @@ class SortMerge(Join.JoinMeta):
 
 
     # join method
-    # Naive Nested Loop
-
+    # Sort Merge Join
+    # !!! PRESUMPTION !!! not tested with condition other than EQUAL
     def join(self, left_relation: Table, right_relation: Table, condition: Callable[[List[int], List[int]], bool]):
         super().join(left_relation, right_relation, condition)
-        if condition != Join.EQUAL: # !!! presumption !!!
-            raise Exception("condition should be Join.EQUAL - presumption")
+        #if condition != Join.EQUAL: # !!! presumption !!!
+        #    raise Exception("condition should be Join.EQUAL - presumption")
         mergeFunction = self.mergeOutputRow
         leftRows = left_relation.GetRows
         rightRows = right_relation.GetRows
@@ -34,8 +34,7 @@ class SortMerge(Join.JoinMeta):
 
         while not join_finished:
             # find min Y
-            while not condition(cr_left, cr_right):
-                print("Finding min")
+            while not condition(cr_left, cr_right) and not join_finished:
                 if left_a < right_a:
                     while cr_left[A] == left_a and not left_relation.Eof():
                         cr_left = left_relation.NextRow()
@@ -48,7 +47,7 @@ class SortMerge(Join.JoinMeta):
                     right_a = cr_right[A]
 
             # mergeData - common buffer?
-            right_rowid = right_relation.GetLastRowId()
+            right_rowid = cr_right.GetId()
             first_row = cr_right
             # now condition is true
             left_cond = True
@@ -71,7 +70,7 @@ class SortMerge(Join.JoinMeta):
                 else:
                     left_cond = right_cond = condition(cr_left, cr_right)
                     first_row = cr_right
-                    right_rowid = right_relation.GetLastRowId()
+                    right_rowid = cr_right.GetId()
 
 
 

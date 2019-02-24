@@ -11,7 +11,6 @@ from Operator import Join
 
 class KeySizeTest(unittest.TestCase):
 
-
     def test_iterate_over_all(self):
         no_blocks = 100
         block_size = 5

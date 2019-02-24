@@ -2,13 +2,13 @@
 from Operator import Join
 from DBObject.Table import Table
 from typing import Callable, List
-
+from DBObject.Row import Row
 
 class NestedLoop(Join.JoinMeta):
 
     # join method
     # Naive Nested Loop
-    def join(self, left_relation: Table, right_relation: Table, condition: Callable[[List[int], List[int]], bool]):
+    def join(self, left_relation: Table, right_relation: Table, condition: Callable[[Row,Row], bool]):
         super().join(left_relation,right_relation,condition)
         mergeFunction = self.mergeOutputRow
         leftRows = left_relation.GetRows
