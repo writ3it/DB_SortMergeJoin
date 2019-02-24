@@ -31,6 +31,7 @@ class JointsGeneratorTest(unittest.TestCase):
 
         counter = Counter()
         counter.Observe("NextBlock")
+        counter.Observe("LoadBlockWith")
 
         buffer = Buffer(M)
         fR = DataFile(B_R, key_size=self.params.GetRKeySize(), block_size=self.params.GetBlockSize(), name="fR")

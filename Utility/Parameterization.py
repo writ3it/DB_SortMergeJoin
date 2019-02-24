@@ -14,6 +14,8 @@ class Parametrization:
         self.__block_size = 0
         self.__total_size = 0
         self.__size = 0
+        self.__r_buffer_size = 0
+        self.__s_buffer_size = 0
 
     def SetSize(self, blocks:int):
         self.__size = blocks
@@ -73,5 +75,19 @@ class Parametrization:
 
     def GetTotalSize(self):
         return self.__total_size
+
+    def GetRBufferSize(self):
+        return self.__r_buffer_size
+
+    def GetSBufferSize(self):
+        return self.__s_buffer_size
+
+    def SetRBufferSize(self, n: int):
+        self.__r_buffer_size = n
+        return self
+
+    def SetSBufferSize(self, n: int):
+        self.__s_buffer_size = n
+        return self
 
 
