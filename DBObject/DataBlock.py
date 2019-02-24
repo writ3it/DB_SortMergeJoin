@@ -6,6 +6,9 @@ class DataBlock:
         self.key_size = key_size
         self.no_rows = no_rows
 
+    def GetBlockId(self):
+        return self.start_idx // self.no_rows
+
     def GetStartIdx(self)->int:
         return self.start_idx
 

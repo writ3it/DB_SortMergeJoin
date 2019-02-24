@@ -3,12 +3,12 @@ import unittest
 from DBObject.Buffer import Buffer
 from DBObject.DataFile import DataFile
 from DBObject.Table import Table
-from Algorithm.BlockNestedLoop import BlockNestedLoop
+from Algorithm.SortMerge import SortMerge
 from Operator import Join
 from Benchmark.Counter import Counter
 from Benchmark.MeasurerProxy import MeasurerProxy
 
-class BlockNestedLoopTest(unittest.TestCase):
+class SortMergeTest(unittest.TestCase):
 
 
 
@@ -35,7 +35,7 @@ class BlockNestedLoopTest(unittest.TestCase):
         self.assertEqual(B_R, R.GetSize(), "Size of R")
         self.assertEqual(B_S, S.GetSize(), "Size of S")
 
-        algorithm = BlockNestedLoop()
+        algorithm = SortMerge()
         algorithm.join(R, S, Join.EQUAL)
 
         self.assertEqual(expected, counter.GetValue(), "Join R->S")

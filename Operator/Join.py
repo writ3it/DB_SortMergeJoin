@@ -4,7 +4,7 @@ class JoinMeta:
         pass
 
     def mergeOutputRow(self, row_l, row_r):
-        #print(row_l, row_r)
+        print(row_l, row_r)
         pass
 
 

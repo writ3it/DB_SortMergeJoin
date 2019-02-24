@@ -11,21 +11,23 @@ class Table:
         self.buffer.SetDataFile(file)
         self.GetPart = self.buffer.GetPart
         #improve performance
+        self.GetLastRowId = self.file.GetLastRowId
         self.Reset = self.buffer.Reset
         self.GetSize = self.file.GetSize
         self.blockSize = self.file.BlockSize
         self.NextRow = self.buffer.NextRow
         self.NextBlock = self.buffer.GetPart
+        self.RewindTo = self.buffer.RewindTo
         self.Eof = self.buffer.Eof
 
-    def GetBufferedBlocks(self):
+    def GetBufferedBlocks(self)->list:
         self.Reset()
         nextPart = self.GetPart
         n = math.ceil(self.GetSize() / self.buffer.GetSize())
         for i in range(0, n):
             yield list(nextPart())
 
-    def GetRows(self):
+    def GetRows(self)->list:
         self.Reset()
         nextRow = self.NextRow
         n = self.GetSize()*self.blockSize()

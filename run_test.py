@@ -1,5 +1,5 @@
 import unittest
-from test.blockNestedLoopTest import BlockNestedLoopTest
+from test.sortMergeTest import SortMergeTest
 
 if __name__ == '__main__':
     unittest.main()

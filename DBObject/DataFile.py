@@ -15,6 +15,17 @@ class DataFile:
         self.readedIdx = 0
         self.blockReadedIdx = 0
 
+    def Seek(self, idx: int)->None:
+        self.blockReadedIdx = self.calcBlockIdx(idx)+1
+        self.readedIdx = self.blockReadedIdx * self.blockSize
+
+    def LoadBlockWith(self, idx: int)->DataBlock:
+        if not self.Contains(idx):
+            raise Exception("Idx doesn't exists")
+        bIdx = self.calcBlockIdx(idx)
+        rIdx = bIdx * self.blockSize
+        return DataBlock(rIdx, self.keySize, self.blockSize)
+
     def Eof(self)->bool:
         return self.blockReadedIdx == self.fileSize
 
@@ -37,6 +48,12 @@ class DataFile:
         self.readedIdx += self.blockSize
         self.blockReadedIdx += 1
         return block
+
+    def GetLastRowId(self)->int:
+        return self.readedIdx - 1
+
+    def calcBlockIdx(self, idx):
+        return idx // self.blockSize
 
 
 

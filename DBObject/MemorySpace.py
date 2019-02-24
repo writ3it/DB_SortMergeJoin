@@ -1,4 +1,5 @@
 from DBObject.DataFile import DataFile
+from DBObject.DataBlock import DataBlock
 from functools import reduce
 
 
@@ -19,7 +20,19 @@ class MemorySpace:
         self._fileReset = None
         self._readedBlocks = 0
 
-    def GetSize(self):
+    def RewindTo(self, idx:int)->None:
+        if not self.file.Contains(idx):
+            raise Exception("Idx doesn't exists")
+        if not self.Contains(idx):
+            block = self.file.LoadBlockWith(idx)
+            self.bufferBlock(block)
+        else:
+            block = self.getBlockContains(idx)
+        self._readedBlocks = block.GetBlockId()+1
+        self.idx = idx
+        self.file.Seek(idx)
+
+    def GetSize(self)->int:
         return self.size
 
     def GetPart(self):
@@ -44,12 +57,17 @@ class MemorySpace:
         self.idx += 1
         return self.Read()
 
+
     def Read(self):
         self.loadBlocksIfShouldBe()
+        return self.getBlockContains(self.idx).ReadRow(self.idx)
+
+    def getBlockContains(self, idx) -> DataBlock:
         for block in self.bufferedBlocks:
-            if block.Contains(self.idx):
-                return block.ReadRow(self.idx)
+            if block.Contains(idx):
+                return block
         raise Exception("Something went wrong idx="+str(self.idx)+" file="+self.file.GetName())
+
 
     def loadBlocksIfShouldBe(self)->None:
         self.__light_contains = self.Contains(self.idx)
@@ -60,8 +78,11 @@ class MemorySpace:
     def _loadNextBlock(self)->None:
         block = self.file.NextBlock()
         self._readedBlocks += 1
+        self.bufferBlock(block)
+
+    def bufferBlock(self, block:DataBlock)->None:
         self.lastBlockCursor = (self.lastBlockCursor + 1) % self.size
-        if len(self.bufferedBlocks)<self.size:
+        if len(self.bufferedBlocks) < self.size:
             self.bufferedBlocks.append(block)
         else:
             self.bufferedBlocks[self.lastBlockCursor] = block
