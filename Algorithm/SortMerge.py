@@ -24,7 +24,6 @@ class SortMerge(Join.JoinMeta):
 
         A = 0
 
-
         join_finished = left_relation.Eof() or right_relation.Eof()
 
         cr_left = left_relation.NextRow()
@@ -34,7 +33,6 @@ class SortMerge(Join.JoinMeta):
 
         while not join_finished:
             # find min Y
-
             while not condition(cr_left, cr_right):
                 if left_a < right_a:
                     while cr_left[A] == left_a and not left_relation.Eof():
@@ -52,11 +50,17 @@ class SortMerge(Join.JoinMeta):
             first_row = cr_right
             left_cond = True
             right_cond = True
-            while left_cond and not left_relation.Eof(): # left relation
-                while right_cond and not right_relation.Eof(): # right relation
+            while left_cond: # left relation
+                while right_cond: # right relation
                     self.mergeOutputRow(cr_left, cr_right)
+                    if right_relation.Eof():
+                        join_finished = True
+                        break
                     cr_right = right_relation.NextRow()
                     right_cond = condition(cr_left, cr_right)
+                if left_relation.Eof():
+                    join_finished = True
+                    break
                 cr_left = left_relation.NextRow()
                 if condition(cr_left, first_row):
                     right_relation.RewindTo(row_id)
@@ -65,7 +69,7 @@ class SortMerge(Join.JoinMeta):
                     first_row = cr_right
                     right_rowid = right_relation.GetLastRowId()
 
-            break
+
 
             # now condition is true
 

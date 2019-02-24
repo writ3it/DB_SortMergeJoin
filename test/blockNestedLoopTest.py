@@ -45,7 +45,6 @@ class BlockNestedLoopTest(unittest.TestCase):
         S = Table(fS, buffer.GetMemorySpace(1))
         R = Table(fR, buffer.GetMemorySpace(100))
 
-        algorithm = BlockNestedLoop()
         algorithm.join(S, R, Join.EQUAL)
         self.assertEqual(expected2, counter.GetValue(), "Join S->R")
 

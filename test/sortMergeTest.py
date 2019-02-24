@@ -17,11 +17,12 @@ class SortMergeTest(unittest.TestCase):
         B_R = 1000
         B_S = 500
         M = 101
-        expected = 5500 # rows(R) * blocks(S) + blocks(R)
-        expected2 = 6000
+        expected = 1001 # rows(R) * blocks(S) + blocks(R)
+        expected2 = 1001
 
         counter = Counter()
         counter.Observe("NextBlock")
+        counter.Observe("LoadBlockWith")
 
         buffer = Buffer(M)
         fR = DataFile(B_R,key_size=1, block_size=5, name="fR")
@@ -45,7 +46,6 @@ class SortMergeTest(unittest.TestCase):
         S = Table(fS, buffer.GetMemorySpace(1))
         R = Table(fR, buffer.GetMemorySpace(100))
 
-        algorithm = BlockNestedLoop()
         algorithm.join(S, R, Join.EQUAL)
         self.assertEqual(expected2, counter.GetValue(), "Join S->R")
 
