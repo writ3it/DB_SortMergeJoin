@@ -5,7 +5,6 @@ import math
 class Table:
 
     def __init__(self, file, buffer_space: MemorySpace):
-
         self.file = file
         self.buffer = buffer_space
         self.buffer.SetDataFile(file)

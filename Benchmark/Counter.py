@@ -17,3 +17,6 @@ class Counter:
 
     def GetValue(self):
         return self.counter
+
+    def SetValue(self, n: int):
+        self.counter = n

@@ -27,6 +27,10 @@ class Experiment:
         self.name = name
         self.data = []
 
+    def SetTableName(self, size:int):
+        self.tableSize = size
+        return self
+
     def SetSelectivityRange(self, start: float, stop: float, steps: int):
         self.selectivityRange = [start, stop, steps]
         return self
@@ -65,7 +69,7 @@ class Experiment:
         line = ["\/ Rozmiar bufora (bloki) / selektywność =>"]
         for selectivity in np.linspace(*self.selectivityRange):
             line.append(selectivity)
-
+        self.Out(line)
         total = self.bufferRange[2] * self.selectivityRange[2]
         i = 0
         for buffer_size in np.linspace(*self.bufferRange):
@@ -84,6 +88,7 @@ class Experiment:
                 print("Progress= "+str(progress)+"% | Run bs="+str(bs)+" selectivity="+str(selectivity) +" RBuffer="+str(params.GetRBufferSize())+" SBuffer="+str(params.GetSBufferSize()))
                 value = self.exp(algo, params, generator)
                 i += 1
+                print("Wartość = "+str(value[0])+" Liczba wierszy wyniku="+str(value[1])+" Liczba wierwszy możliwych="+str(params.GetTotalSize())+" Selektywność="+str(params.RealSelectivity()))
                 line.append(value[0])
             self.Out(line)
         self.Dump()
@@ -101,7 +106,8 @@ class Experiment:
         d = datetime.datetime.now()
         dt = '{:%Y-%m-%d}'.format(d)
         path = os.getcwd()+"/output/"+self.name+"-"+dt+".csv"
-        with open(path, "wb"):
+        print("Output: "+path)
+        with open(path, "w") as f:
             writer = csv.writer(f)
             writer.writerows(self.data)
 
@@ -121,7 +127,7 @@ class Experiment:
 
         R = Table(fR, buffer.GetMemorySpace(params.GetRBufferSize()))
         S = Table(fS, buffer.GetMemorySpace(params.GetSBufferSize()))
-
+        algorithm.SetCounter(counter)
         algorithm.join(R, S, generator.condition)
 
         return [counter.GetValue(), algorithm.GetOutputSize()]
