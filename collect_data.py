@@ -1,24 +1,35 @@
 import random
 from Utility.Experiment import Experiment
-
+import math
 
 # experiment has to be recurrent
 random.seed(23)
 
+
 def ConstBuffer(name: str, algoName: str):
     sortMerge = Experiment(name)
+    blocks = 100
+    max_blocks = blocks // 2
+    block = 10
+    rows = max_blocks * block
+    rows2 = blocks*block
+    sel = rows2/(rows2**2)
+    print("Max sel = "+str(sel))
+
     sortMerge.SetAlgorithm(algoName) \
-        .SetTableName(100) \
-        .SetBlockSize(10) \
-        .SetSelectivityRange(0, 0.001, 30) \
-        .SetBufferRange(2, 30, 10)
+        .SetTableSize(blocks) \
+        .SetBlockSize(block) \
+        .SetSelectivityRange(0, sel, 30) \
+        .SetBufferRange(2, max_blocks, 10)
     return sortMerge
 
 
-ConstBuffer("CalcNestedLoop", "CalcNestedLoop").SetConstRBufferSize(1).Run()
 ConstBuffer("SortMerge", "SortMerge").SetConstRBufferSize(1).Run()
-ConstBuffer("CalcNestedLoop-split", "CalcNestedLoop").SetConstBufferSplit(0.5).Run()
+ConstBuffer("BlockNestedLoop", "BlockNestedLoop").SetConstRBufferSize(1).Run()
+
 ConstBuffer("SortMerge-split", "SortMerge").SetConstBufferSplit(0.5).Run()
+ConstBuffer("BlockNestedLoop-split", "BlockNestedLoop").SetConstBufferSplit(0.5).Run()
+
 
 
 

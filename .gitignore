@@ -109,3 +109,6 @@ output/*
 !output/empty
 *.csv
 *.csv#
+doc/*
+.Rproj.user
+.Rmd

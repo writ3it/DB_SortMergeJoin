@@ -42,7 +42,7 @@ class Parametrization:
         self.__s_key_size = 1
         self.__r_size = self.__size * self.__block_size
         self.__s_size = self.__r_size
-        self.__total_size = self.__r_size * self.__block_size
+        self.__total_size = self.__r_size
         self.__good_data = math.ceil(math.sqrt(s*(self.__total_size**2)))
         self.__waste_data = self.__total_size - self.__good_data
 

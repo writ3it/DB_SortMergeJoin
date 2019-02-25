@@ -27,7 +27,7 @@ class Experiment:
         self.name = name
         self.data = []
 
-    def SetTableName(self, size:int):
+    def SetTableSize(self, size: int):
         self.tableSize = size
         return self
 
@@ -65,7 +65,7 @@ class Experiment:
         self.data.append(line)
 
     def Run(self):
-        self.Out(["Rozmiar bloku: ", self.blockSize, "Nazwa", self.name])
+
         line = ["\/ Rozmiar bufora (bloki) / selektywność =>"]
         for selectivity in np.linspace(*self.selectivityRange):
             line.append(selectivity)
@@ -88,9 +88,10 @@ class Experiment:
                 print("Progress= "+str(progress)+"% | Run bs="+str(bs)+" selectivity="+str(selectivity) +" RBuffer="+str(params.GetRBufferSize())+" SBuffer="+str(params.GetSBufferSize()))
                 value = self.exp(algo, params, generator)
                 i += 1
-                print("Wartość = "+str(value[0])+" Liczba wierszy wyniku="+str(value[1])+" Liczba wierwszy możliwych="+str(params.GetTotalSize())+" Selektywność="+str(params.RealSelectivity()))
+                print("Wartość = "+str(value[0])+" Liczba wierszy wyniku="+str(value[1])+" Liczba wierwszy możliwych="+str(params.GetTotalSize())+" Selektywność="+str(params.RealSelectivity())+" Rozmiar relacji="+str(self.tableSize))
                 line.append(value[0])
             self.Out(line)
+        #self.Out(["Rozmiar bloku: ", self.blockSize, "Nazwa", self.name])
         self.Dump()
 
     def SetBuffers(self, params: Parametrization, bs: int):
