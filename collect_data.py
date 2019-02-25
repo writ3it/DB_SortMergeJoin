@@ -25,10 +25,10 @@ def ConstBuffer(name: str, algoName: str):
 
 
 ConstBuffer("SortMerge", "SortMerge").SetConstRBufferSize(1).Run()
-ConstBuffer("BlockNestedLoop", "BlockNestedLoop").SetConstRBufferSize(1).Run()
+ConstBuffer("CalcNestedLoop", "CalcNestedLoop").SetConstRBufferSize(1).Run()
 
 ConstBuffer("SortMerge-split", "SortMerge").SetConstBufferSplit(0.5).Run()
-ConstBuffer("BlockNestedLoop-split", "BlockNestedLoop").SetConstBufferSplit(0.5).Run()
+ConstBuffer("CalcNestedLoop-split", "CalcNestedLoop").SetConstBufferSplit(0.5).Run()
 
 
 
