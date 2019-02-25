@@ -1,0 +1,109 @@
+---
+title: "Porównanie algorytmów połączenia relacji NestedLoop oraz SortMergeJoin w zależności od selektywności oraz rozmiaru bufora."
+author: "Jędrzej Klorek, Jakub Malczewski"
+date: "PUT Poznań, 25 lutego 2019"
+output: pdf_document
+bibliography: bibliography.bibtex
+---
+
+```{r, setup, echo=FALSE, output=FALSE,results=FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+require(dplyr) 
+library(reshape2)
+library(scales)
+relation_size = 100
+block_size = 10
+```
+
+# Wprowadzenie
+Połączenie w relacyjnej bazie danych jest operacją łączącą krotki relacji. Jednym z najprostszych algorytmów [@SYS2011, str. 641], który może zostać wykorzystany do realizacji zadania jest złączenie zagnieżdżone, dale zwane NestedLoop. Jest to nieoptymalny algorytm w wielu sytuacjach połączeniowych choć wciąż przydatny.  Klasyczny NestedLoop jest z zasady niezależny od rozmiaru bufora (niezbędna jest jego minimalna ilość) jednak nie jest to regułą pośród algorytmów. Intuicyjnie, wraz ze wzrostem poziomu normalizacji relacji bazy danych,  w aplikacji użytkowej może zachodzić coraz silniejsza i liczniejsza potrzeba dokonywania połączeń, co za tym idzie, wydajność staje się kluczowa. Przykładem algorytmu, który często jest wydajniejszy oraz wykorzystuje bufor do przyspieszenia połączenia jest algorytm złączenia oparty na sortowaniu, zwany dalej SortMergeJoin.  Optymalizacji wyboru algorytmu połączeniowego na podstawie zapytania dokonuje moduł optymalizatora zapytań. Operacja ta dokonywana jest na podstawie statystyk oraz założeń dokonywanych przez producenta bazy danych. W normalnej pracy moduł dla programisty jest transparentny tj. nie musi zdawać sobie sprawy z jego istnienia. W przypadku optymalizacji zapytań System Relacyjnej Bazy Danych (SRBD) udostępnia narzędzia do podglądu decyzji podjętych przez moduł. Aby móc zweryfikować poprawność decyzji należy porównać ze sobą dostępne algorytmy w zależności od wybranych parametrów, czym zajmiemy się w dalszej cześci artykułu.
+
+# Metody
+W celu porównania pracy SortMergeJoin z NestedLoopJoin określono parametry opisujące warunki pracy algorytmów, oraz dokonano wyboru ich implementacji. Na tej podstawie powstał program zaimplementowany w języku Python dokonujący symulacji algorytmów [@GIT2019]. Symulator posłużył do zebrania danych, reprezentujących wydajność algorytmu, które zostały opracowane w niniejszym artykule.
+
+Wybranymi parametrami opisującymi warunki pracy algorytmu są rozmiar bloku, rozmiar relacji, selektywność zapytania oraz rozmiar dostępnego bufora. Przyjęty rozmiar bloku to `r block_size` wierszy. Rozmiar relacji został określony na `r relation_size`.
+
+Przez selektywność zapytania rozumiemy współczynnik obliczony wg. wzoru:
+$$Sel=\frac{<ilość\ krotek\ wynikowych>}{<ilość\ krotek\ relacji\ R> * <ilość\ krotek\ relacji\ S>}$$
+gdzie relacje R i S są łączonymi zbiorami krotek. 
+
+Rozmiar bufora określony został w ilości bloków. Dodatkowo bufor zaimplementowany w programie symulujących oczekuje odgórnego podziału pamięci na rzecz relacji R oraz S. Algorytmy połączeniowe często wychodzą od podstawowego algorytmu, NestedLoop stąd obecne są w nim pętla zewnętrzna - iterująca się (zazwyczaj) po kroktach lewej relacji oraz wewnętrzna. W przypadku SortMergeJoin optymalizacja polega na uporządkowaniu danych co pozwala efektywniej sterować przebiegiem iteracji. Aby zbadać zachowanie obu pętli podział bufora jest niezbędny.
+
+W przypadku SortMergeJoin spodziewanymi punktami wpływającymi na pracę algorytmu są miejsca gdy ilość krotek relacji podlegającymi połączoeniu jest większa niż dostępny bufor. 
+
+Badanym parametrem algorytmu jest ilość dostępów do dysku w celu odczytania bloku danych należących do przetwarzanej relacji. Całkowicie został pominięty aspekt zapisu wyniku ze względu na złożoność pamięciową zależną wyłącznie od rozmiaru wyniku oraz sposobu dostarczania go do aplikacji użytkowej.
+
+W symulatorze zostały zaimplementowane dwie wersje algorytmu NestedLoop. Pierwsza z nich jest klasyczna, oparta o dwie pętle, druga (BlockNestedLoop) wykorzystuje fakt odczytywania danych w blokach i wykorzystuje trzy pętle. W efekcie pętla przetwarzająca prawą relację nie odczytuje bloków co każdy wiersz lewej relacji a co każdy blok. Implementacja SortMergeJoin została oparta o pseudokod podany przez Héctor García-Molina [@SYS2011, str. 650], w tej implementacji zakładamy, że zbiory krotek są już posortowane a ilość dostępów wykorzystywana do sortowanie zostanie obliczona [@SYS2011, rozdz. 15.4.7 ]. Dzięki temu uproszczeniu symulator nie musi przetrzymywać zbiorów danych w pamięci operacyjnej w zamian generując je w momencie gdy są potrzebne. 
+
+# Wyniki
+
+## Porównanie NestedLoop do SortMergeJoin - stały przydział bufora
+```{r,plots, echo=FALSE,  message=FALSE}
+
+displayResults <- function(name){
+  path <- paste(getwd(),"/../output/",name,".csv",sep="")
+  data <- data.frame(read.csv(path,check.names=FALSE), check.names = FALSE)
+  cols <- colnames(data)
+  nameCol <- cols[1]
+  rownames(data) <- data[,1]
+  return (data)
+}
+diff.df <- function(A,B){
+
+  n <- length(colnames(A))
+  output <- data.frame(matrix(ncol=n, nrow=0))
+  for (row in 1:nrow(A)){
+    rowData <- list()
+    for (col in 1:n){
+      if (col == 1){
+        val = A[row,col]
+      } else {
+        val = A[row,col] - B[row,col]
+      }
+      rowData[col] <- val
+    }
+    output <- rbind(output, rowData)
+  }
+  return (output)
+}
+display <- function(df,title, xlab, ylab,zlab, colnames){
+  colnames(df)<-
+    lapply(
+      colnames,
+      function(x){ 
+        l <- substr(x,1,1)
+        if (l!='0' && l!='1'){
+          return(x)
+        }
+        x = round(as.double(x ),digits=6)
+        return(paste((toString(x, width=8)),sep=""))
+        }
+      )
+  
+  name <- colnames(df)[1]
+  data <- melt(df, id=c(name))
+  colnames(data)<- c("Var1",'Var2','value')
+  breaks <- unique(data$Var1)
+  #data$value <- rescale(data$value)
+  ggplot(data, aes(Var1, Var2)) + 
+    geom_tile(aes(fill = value), colour = "white") + 
+    scale_fill_gradient(low = "steelblue", high = "white") + 
+    scale_x_continuous(breaks = breaks)  + 
+    ggtitle(title) + 
+    labs(x=xlab, y=ylab) + 
+    theme(axis.text.y = element_text(hjust = 0)) + 
+    guides(fill=guide_legend(title=zlab))
+}
+SortMerge <- displayResults("SortMerge-split-2019-02-25")
+NestedLoop <- displayResults("CalcNestedLoop-split-2019-02-25")
+heatmap <- diff.df(SortMerge, NestedLoop)
+display(heatmap,"Porównanie SortMerge - NestedLoop\nproporcjonalny podział bufora","Rozmiar bufora, podzielony 50% - 50%","Selektywność","Różnica",colnames(SortMerge))
+
+SortMerge <- displayResults("SortMerge-2019-02-25")
+NestedLoop <- displayResults("CalcNestedLoop-2019-02-25")
+heatmap <- diff.df(SortMerge, NestedLoop)
+display(heatmap,"Porównanie SortMerge - NestedLoop\n1 blok bufora dla R","Rozmiar bufora, podzielony 1 - (n-1)","Selektywność","Różnica",colnames(SortMerge))
+```
+# Dyskusja
+
+# References
