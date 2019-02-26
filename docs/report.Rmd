@@ -94,16 +94,23 @@ display <- function(df,title, xlab, ylab,zlab, colnames){
     theme(axis.text.y = element_text(hjust = 0)) + 
     guides(fill=guide_legend(title=zlab))
 }
-SortMerge <- displayResults("SortMerge-split-2019-02-25")
-NestedLoop <- displayResults("CalcNestedLoop-split-2019-02-25")
+SortMerge <- displayResults("SortMerge-split-2019-02-26")
+NestedLoop <- displayResults("CalcNestedLoop-split-2019-02-26")
 heatmap <- diff.df(SortMerge, NestedLoop)
 display(heatmap,"Porównanie SortMerge - NestedLoop\nproporcjonalny podział bufora","Rozmiar bufora, podzielony 50% - 50%","Selektywność","Różnica",colnames(SortMerge))
 
-SortMerge <- displayResults("SortMerge-2019-02-25")
-NestedLoop <- displayResults("CalcNestedLoop-2019-02-25")
+SortMerge <- displayResults("SortMerge-sbuffer-2019-02-26")
+NestedLoop <- displayResults("CalcNestedLoop-sbuffer-2019-02-26")
+heatmap <- diff.df(SortMerge, NestedLoop)
+display(heatmap,"Porównanie SortMerge - NestedLoop\n1 blok bufora dla S","Rozmiar bufora, podzielony (n-1) - 1","Selektywność","Różnica",colnames(SortMerge))
+
+SortMerge <- displayResults("SortMerge-2019-02-26")
+NestedLoop <- displayResults("CalcNestedLoop-2019-02-26")
 heatmap <- diff.df(SortMerge, NestedLoop)
 display(heatmap,"Porównanie SortMerge - NestedLoop\n1 blok bufora dla R","Rozmiar bufora, podzielony 1 - (n-1)","Selektywność","Różnica",colnames(SortMerge))
 ```
 # Dyskusja
+
+## Wnioski
 
 # References

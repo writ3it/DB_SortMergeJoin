@@ -18,6 +18,7 @@ class Experiment:
 
         self.bufferRange = [1,10, 1]
         self.constBuffer = False
+        self.constBufferS = False
         self.splitBuffer = False
         self.tableSize = 50
         self.blockSize = 5
@@ -95,13 +96,21 @@ class Experiment:
         self.Dump()
 
     def SetBuffers(self, params: Parametrization, bs: int):
-        if self.constBuffer:
-            print("Const split " + str(self.constBuffer))
-            params.SetRBufferSize(self.constBuffer)
-        if self.splitBuffer:
-            print("Var split "+str(self.splitBuffer))
-            params.SetRBufferSize(math.floor(bs * self.splitBuffer))
-        params.SetSBufferSize(bs - params.GetRBufferSize())
+        # to do: refactoring
+        if not self.constBufferS:
+            if self.constBuffer:
+                print("Const split " + str(self.constBuffer))
+                params.SetRBufferSize(self.constBuffer)
+            if self.splitBuffer:
+                print("Var split " + str(self.splitBuffer))
+                params.SetRBufferSize(math.floor(bs * self.splitBuffer))
+            params.SetSBufferSize(bs - params.GetRBufferSize())
+        else:
+            if self.constBufferS:
+                print("Const split [S] " + str(self.constBufferS))
+                params.SetSBufferSize(self.constBufferS)
+            params.SetRBufferSize(bs - params.GetSBufferSize())
+
 
     def Dump(self):
         d = datetime.datetime.now()
@@ -132,5 +141,11 @@ class Experiment:
         algorithm.join(R, S, generator.condition)
 
         return [counter.GetValue(), algorithm.GetOutputSize()]
+
+    def SetConstSBufferSize(self, param):
+        if self.splitBuffer:
+            raise Exception('You can use one Buffer plan!')
+        self.constBufferS = param
+        return self
 
 
